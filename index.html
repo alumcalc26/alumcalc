@@ -1,0 +1,654 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALUMCALC — Menuiserie Aluminium</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="shell">
+
+<!-- ===== TOPBAR ===== -->
+<div class="topbar">
+  <div>
+    <div style="display:flex;align-items:center;gap:0.7rem">
+    <div>
+      <div class="logo">ALUM<span>CALC</span><span class="logo-v">v1</span></div>
+      <div style="font-size:0.52rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase">Menuiserie Aluminium</div>
+    </div>
+  </div>
+  </div>
+  <div class="topbar-center">
+    <button class="tb-btn active" onclick="showPage('devis',this)">📐 Devis</button>
+    <button class="tb-btn" onclick="showPage('fenetres',this)">🪟 Fenêtres</button>
+    <button class="tb-btn" onclick="showPage('portes',this)">🚪 Portes</button>
+    <button class="tb-btn" onclick="showPage('verandas',this)">🏗 Vérandas</button>
+    <button class="tb-btn" onclick="showPage('facades',this)">🏢 Façades</button>
+    <button class="tb-btn" onclick="showPage('debit',this)">✂ Débits</button>
+    <button class="tb-btn" onclick="showPage('dessin',this)">📏 Dessins</button>
+    <button class="tb-btn" onclick="showPage('remplissage',this)">🪟 Vitrage</button>
+    <button class="tb-btn" onclick="showPage('series',this)">🔩 Séries</button>
+    <button class="tb-btn" onclick="showPage('accessoires',this)">⚙ Accessoires</button>
+    <button class="tb-btn" onclick="showPage('tarifs',this)">💰 Tarifs</button>
+    <button class="tb-btn" onclick="showPage('dashboard',this)">📊 Bord</button>
+  </div>
+  <div style="display:flex;gap:0.4rem">
+    <button class="btn btn-s xs" onclick="exportData()">💾 Export</button>
+    <button class="btn btn-p xs" onclick="printDevis()">🖨 Print</button>
+  </div>
+</div>
+
+<!-- ===== WORKSPACE ===== -->
+<div class="workspace">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="nav-section">Calcul</div>
+  <div class="nav-item active" onclick="navClick(this,'devis')"><span class="nav-icon">📐</span>Nouveau Devis</div>
+  <div class="nav-item" onclick="navClick(this,'fenetres')"><span class="nav-icon">🪟</span>Fenêtres</div>
+  <div class="nav-item" onclick="navClick(this,'portes')"><span class="nav-icon">🚪</span>Portes</div>
+  <div class="nav-item" onclick="navClick(this,'verandas')"><span class="nav-icon">🏗</span>Vérandas</div>
+  <div class="nav-item" onclick="navClick(this,'facades')"><span class="nav-icon">🏢</span>Façades / Rideaux</div>
+  <div class="sep"></div>
+  <div class="nav-section">Production</div>
+  <div class="nav-item" onclick="navClick(this,'debit')"><span class="nav-icon">✂</span>Liste de Débits</div>
+  <div class="nav-item" onclick="navClick(this,'dessin')"><span class="nav-icon">📏</span>Dessins 2D</div>
+  <div class="nav-item" onclick="navClick(this,'remplissage')"><span class="nav-icon">🔷</span>Vitrage & Remplissage</div>
+  <div class="sep"></div>
+  <div class="nav-section">Bibliothèque</div>
+  <div class="nav-item" onclick="navClick(this,'series')"><span class="nav-icon">🔩</span>Séries Profilés</div>
+  <div class="nav-item" onclick="navClick(this,'accessoires')"><span class="nav-icon">⚙</span>Accessoires</div>
+  <div class="nav-item" onclick="navClick(this,'tarifs')"><span class="nav-icon">💰</span>Tarifs & Prix</div>
+  <div class="nav-item" onclick="navClick(this,'dashboard')"><span class="nav-icon">📊</span>Tableau de Bord</div>
+  <div class="sep"></div>
+  <div class="sp-wrap">
+    <div class="sp-label">Série Active</div>
+    <div class="sp-tags" id="sidebar-tags"></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="main-content">
+
+<!-- ============================================================ PAGE DEVIS -->
+<div class="page on" id="page-devis">
+  <div class="ph">
+    <div><div class="pt">Nouveau <em>Devis</em></div><div class="ps">Calcul automatique matière · Prix de revient · MAD</div></div>
+    <div style="display:flex;gap:0.4rem">
+      <button class="btn btn-s xs" onclick="clearDevis()">🗑 Vider</button>
+      <button class="btn btn-g xs" onclick="genDebit()">✂ Générer Débits</button>
+    </div>
+  </div>
+
+  <!-- ░ AD 728 × 90 ░ -->
+  <div class="ad-zone ad-lb">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">728 × 90</span>
+      <span class="ad-ph-type">Leaderboard</span>
+    </div>
+  </div>
+  <div class="card g">
+    <div class="ct">📋 Client & Chantier</div>
+    <div class="fg fg3">
+      <div class="field"><label>Client / Entreprise</label><input type="text" id="cl-nom" placeholder="M. Hassan Alami" oninput="updatePanel()"></div>
+      <div class="field"><label>Réf. Chantier</label><input type="text" id="cl-ref" placeholder="CHNT-2024-001" oninput="updatePanel()"></div>
+      <div class="field"><label>Date</label><input type="date" id="cl-date"></div>
+      <div class="field"><label>Adresse Chantier</label><input type="text" id="cl-adr" placeholder="Rue, Ville"></div>
+      <div class="field"><label>Tél</label><input type="text" id="cl-tel" placeholder="0600000000"></div>
+      <div class="field"><label>Notes</label><input type="text" id="cl-notes" placeholder="Remarques..."></div>
+    </div>
+  </div>
+
+  <!-- ░ AD 468 × 60 ░ -->
+  <div class="ad-zone ad-banner">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">468 × 60</span>
+      <span class="ad-ph-type">Banner</span>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab on" onclick="stab(this,'tad')">➕ Ajouter Ouvrage</div>
+    <div class="tab" onclick="stab(this,'tlist')">📦 Liste (<span id="nb-ouv">0</span>)</div>
+    <div class="tab" onclick="stab(this,'tmp')">🔩 Matières</div>
+    <div class="tab" onclick="stab(this,'tacc')">⚙ Accessoires Devis</div>
+  </div>
+  <div class="tc on" id="tad">
+    <div class="card">
+      <div class="ct">🏗 Paramètres Ouvrage</div>
+      <div class="fg fg4">
+        <div class="field"><label>Type d'Ouvrage</label>
+          <select id="o-type">
+            <option value="fenetre">Fenêtre</option>
+            <option value="porte">Porte</option>
+            <option value="veranda">Véranda / Pergola</option>
+            <option value="facade">Façade / Mur Rideau</option>
+            <option value="baie">Baie coulissante</option>
+            <option value="claustra">Claustra / Garde-corps</option>
+          </select>
+        </div>
+        <div class="field"><label>Désignation</label><input type="text" id="o-nom" placeholder="Fen. salon RDC..."></div>
+        <div class="field"><label>Largeur (mm)</label><input type="number" id="o-larg" placeholder="1200"></div>
+        <div class="field"><label>Hauteur (mm)</label><input type="number" id="o-haut" placeholder="1400"></div>
+        <div class="field"><label>Quantité</label><input type="number" id="o-qty" value="1" min="1"></div>
+        <div class="field"><label>Série Profilé</label><select id="o-serie"></select></div>
+        <div class="field"><label>Nb Ouvrants</label><input type="number" id="o-nouvrants" value="2" min="1" max="6"></div>
+        <div class="field"><label>Ouvrant Type</label>
+          <select id="o-ouvrant">
+            <option value="fixe">Fixe</option>
+            <option value="battant">Battant</option>
+            <option value="coulissant">Coulissant</option>
+            <option value="oscillo">Oscillo-battant</option>
+            <option value="pivotant">Pivotant</option>
+            <option value="galandage">Galandage</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg fg4">
+        <div class="field"><label>Remplissage</label>
+          <select id="o-rempl" onchange="updateRempliDetails()">
+            <option value="sv_4">Verre Simple 4mm</option>
+            <option value="sv_5">Verre Simple 5mm</option>
+            <option value="sv_6">Verre Simple 6mm</option>
+            <option value="sv_8">Verre Simple 8mm</option>
+            <option value="dv_4_16_4">DV 4/16/4 (24mm)</option>
+            <option value="dv_4_16Ar_4">DV 4/16Ar/4 — Argon</option>
+            <option value="dv_5_16_5">DV 5/16/5 (26mm)</option>
+            <option value="dv_6_16_6">DV 6/16/6 (28mm)</option>
+            <option value="dv_4_20_4">DV 4/20/4 (28mm)</option>
+            <option value="dv_6_20_6">DV 6/20/6 (32mm)</option>
+            <option value="dv_6_22_6">DV 6/22/6 (34mm)</option>
+            <option value="dv_6_24_6">DV 6/24/6 (36mm)</option>
+            <option value="tv_4_12_4_12_4">TV 4/12/4/12/4 (36mm)</option>
+            <option value="tv_4_16_4_16_4">TV 4/16/4/16/4 (44mm)</option>
+            <option value="tv_6_16_6_16_6">TV 6/16/6/16/6 (50mm)</option>
+            <option value="pan_10">Panneau Opaque 10mm</option>
+            <option value="pan_20">Panneau Opaque 20mm</option>
+            <option value="comp_4">Composite Alucobond 4mm</option>
+            <option value="comp_6">Composite Alucobond 6mm</option>
+          </select>
+        </div>
+        <div class="field"><label>Type de Verre</label>
+          <select id="o-tverre">
+            <option value="clair">Clair (float)</option>
+            <option value="securit">Sécurit (trempé)</option>
+            <option value="feuillte">Feuilleté SGP / PVB</option>
+            <option value="reflexion">Réfléchissant</option>
+            <option value="controle_sol">Contrôle solaire</option>
+            <option value="depoli">Dépoli / Satiné</option>
+            <option value="planitherm">SGG Planitherm (LE)</option>
+            <option value="parsol">SGG Parsol (teinté)</option>
+            <option value="stadip">Stadip (feuilleté sécu)</option>
+            <option value="climalit">Climalit (DV standard)</option>
+            <option value="thermobel">Thermobel (DV argon)</option>
+            <option value="antelio">SGG Antelio (réflect.)</option>
+            <option value="cool_lite">Cool-Lite SKN (ctrl sol.)</option>
+          </select>
+        </div>
+        <div class="field"><label>Finition / RAL</label>
+          <select id="o-finition">
+            <option value="brut">Brut Anodisé</option>
+            <option value="anod_argent">Anodisé Argent C0</option>
+            <option value="anod_or">Anodisé Or</option>
+            <option value="anod_bronze">Anodisé Bronze</option>
+            <option value="ral_9016">RAL 9016 — Blanc trafic</option>
+            <option value="ral_9005">RAL 9005 — Noir foncé</option>
+            <option value="ral_7016">RAL 7016 — Gris anthracite</option>
+            <option value="ral_7035">RAL 7035 — Gris clair</option>
+            <option value="ral_6005">RAL 6005 — Vert mousse</option>
+            <option value="ral_8017">RAL 8017 — Brun chocolat</option>
+            <option value="bois_ch">Décor Chêne</option>
+            <option value="bois_no">Décor Noyer</option>
+            <option value="brossé">Brossé satiné</option>
+          </select>
+        </div>
+        <div class="field"><label>Chute / Perte (%)</label>
+          <input type="number" id="o-chute" value="15" min="5" max="40">
+        </div>
+      </div>
+      <div id="rempl-detail" style="margin-bottom:0.8rem;font-size:0.65rem;color:var(--blue2);padding:0.4rem 0.6rem;background:rgba(77,142,240,0.06);border-radius:2px;border:1px solid rgba(77,142,240,0.15);">
+        Sélectionnez un remplissage pour voir les détails
+      </div>
+      <div style="display:flex;align-items:center;gap:0.7rem">
+        <button class="btn btn-p" onclick="addOuvrage()">＋ Ajouter au Devis</button>
+        <button class="btn btn-b xs" onclick="addOuvrageAndDraw()">＋ Ajouter & Dessiner</button>
+        <span id="calc-preview" style="font-size:0.62rem;color:var(--muted)"></span>
+      </div>
+    </div>
+  </div>
+  <div class="tc" id="tlist"><div id="ouvrages-list"><div class="empty"><div class="empty-i">📦</div><div class="empty-t">Aucun ouvrage ajouté</div></div></div></div>
+  <div class="tc" id="tmp"><div id="mp-detail"><div class="empty"><div class="empty-i">🔩</div><div class="empty-t">Ajoutez des ouvrages pour voir les détails MP</div></div></div></div>
+  <div class="tc" id="tacc"><div id="acc-devis"><div class="empty"><div class="empty-i">⚙</div><div class="empty-t">Ajoutez des ouvrages pour voir les accessoires</div></div></div></div>
+</div>
+
+<!-- ============================================================ PAGE FENETRES -->
+<div class="page" id="page-fenetres">
+  <div class="ph"><div><div class="pt">Calcul <em>Fenêtres</em></div><div class="ps">Dormant, ouvrants, traverses — Métrés automatiques</div></div></div>
+  <div class="card"><div class="ct">📐 Paramètres</div>
+    <div class="fg fg3">
+      <div class="field"><label>Largeur (mm)</label><input type="number" id="fn-l" placeholder="1200" oninput="calcFenetre()"></div>
+      <div class="field"><label>Hauteur (mm)</label><input type="number" id="fn-h" placeholder="1400" oninput="calcFenetre()"></div>
+      <div class="field"><label>Nb Ouvrants</label><input type="number" id="fn-n" value="2" min="1" max="6" oninput="calcFenetre()"></div>
+      <div class="field"><label>Série</label><select id="fn-s" onchange="calcFenetre()"></select></div>
+      <div class="field"><label>Vitrage</label>
+        <select id="fn-v" onchange="calcFenetre()">
+          <option value="sv_4">Simple 4mm</option><option value="dv_4_16_4">DV 4/16/4</option>
+          <option value="dv_4_16Ar_4">DV Argon</option><option value="tv_4_12_4_12_4">Triple</option>
+        </select>
+      </div>
+      <div class="field"><label>Chute (%)</label><input type="number" id="fn-c" value="15" oninput="calcFenetre()"></div>
+    </div>
+  </div>
+  <div id="fn-result"></div>
+
+  <!-- ░ AD 336 × 280 ░ -->
+  <div class="ad-zone ad-rect">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">336 × 280</span>
+      <span class="ad-ph-type">Large Rectangle</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ PAGE PORTES -->
+<div class="page" id="page-portes">
+  <div class="ph"><div><div class="pt">Calcul <em>Portes</em></div><div class="ps">Battantes, coulissantes, galandage</div></div></div>
+  <div class="card"><div class="ct">📐 Paramètres</div>
+    <div class="fg fg3">
+      <div class="field"><label>Largeur (mm)</label><input type="number" id="pt-l" placeholder="900" oninput="calcPorte()"></div>
+      <div class="field"><label>Hauteur (mm)</label><input type="number" id="pt-h" placeholder="2100" oninput="calcPorte()"></div>
+      <div class="field"><label>Type</label><select id="pt-t" onchange="calcPorte()"><option value="battante">Battante</option><option value="double">Double battant</option><option value="coulissante">Coulissante</option><option value="galandage">Galandage</option></select></div>
+      <div class="field"><label>Remplissage</label><select id="pt-r" onchange="calcPorte()"><option value="vitre">Vitré</option><option value="opaque">Opaque</option><option value="mixte">Mi-vitré</option></select></div>
+      <div class="field"><label>Série</label><select id="pt-s" onchange="calcPorte()"></select></div>
+      <div class="field"><label>Chute (%)</label><input type="number" id="pt-c" value="15" oninput="calcPorte()"></div>
+    </div>
+  </div>
+  <div id="pt-result"></div>
+
+  <!-- ░ AD 728 × 90 ░ -->
+  <div class="ad-zone ad-lb">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">728 × 90</span>
+      <span class="ad-ph-type">Leaderboard</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ PAGE VERANDAS -->
+<div class="page" id="page-verandas">
+  <div class="ph"><div><div class="pt">Véranda / <em>Pergola</em></div><div class="ps">Structures légères aluminium</div></div></div>
+  <div class="card"><div class="ct">📐 Paramètres</div>
+    <div class="fg fg3">
+      <div class="field"><label>Longueur (m)</label><input type="number" id="vr-l" placeholder="6.0" step="0.1" oninput="calcVeranda()"></div>
+      <div class="field"><label>Largeur (m)</label><input type="number" id="vr-w" placeholder="4.0" step="0.1" oninput="calcVeranda()"></div>
+      <div class="field"><label>Hauteur (m)</label><input type="number" id="vr-h" placeholder="2.5" step="0.1" oninput="calcVeranda()"></div>
+      <div class="field"><label>Type</label><select id="vr-t" onchange="calcVeranda()"><option value="pergola">Pergola</option><option value="veranda">Véranda vitrée</option><option value="couverture">Couverture poly.</option></select></div>
+      <div class="field"><label>Colonnes (nb)</label><input type="number" id="vr-c" value="4" min="2" oninput="calcVeranda()"></div>
+      <div class="field"><label>Chute (%)</label><input type="number" id="vr-ch" value="18" oninput="calcVeranda()"></div>
+    </div>
+  </div>
+  <div id="vr-result"></div>
+
+  <!-- ░ AD 336 × 280 ░ -->
+  <div class="ad-zone ad-rect">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">336 × 280</span>
+      <span class="ad-ph-type">Large Rectangle</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ PAGE FACADES -->
+<div class="page" id="page-facades">
+  <div class="ph"><div><div class="pt">Façades / <em>Murs Rideaux</em></div><div class="ps">Stick · Unitaire · Semi-unitaire</div></div></div>
+  <div class="card"><div class="ct">📐 Paramètres</div>
+    <div class="fg fg3">
+      <div class="field"><label>Largeur (m)</label><input type="number" id="fc-l" placeholder="12.0" step="0.1" oninput="calcFacade()"></div>
+      <div class="field"><label>Hauteur (m)</label><input type="number" id="fc-h" placeholder="8.0" step="0.1" oninput="calcFacade()"></div>
+      <div class="field"><label>Module (mm)</label><input type="number" id="fc-m" value="1200" oninput="calcFacade()"></div>
+      <div class="field"><label>Système</label><select id="fc-t" onchange="calcFacade()"><option value="stick">Stick System</option><option value="unitaire">Unitaire</option><option value="semi">Semi-unitaire</option></select></div>
+      <div class="field"><label>Remplissage</label><select id="fc-r" onchange="calcFacade()"><option value="vitre">Vitrage 80%</option><option value="mixte">Mixte 50%</option><option value="opaque">Opaque 20%</option></select></div>
+      <div class="field"><label>Chute (%)</label><input type="number" id="fc-ch" value="20" oninput="calcFacade()"></div>
+    </div>
+  </div>
+  <div id="fc-result"></div>
+
+  <!-- ░ AD 728 × 90 ░ -->
+  <div class="ad-zone ad-lb">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">728 × 90</span>
+      <span class="ad-ph-type">Leaderboard</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ PAGE DÉBITS -->
+<div class="page" id="page-debit">
+  <div class="ph">
+    <div><div class="pt">Liste de <em>Débits</em></div><div class="ps">Coupes profilés · Angles · Chutes · Plan de débit visuel</div></div>
+    <div style="display:flex;gap:0.4rem">
+      <button class="btn btn-s xs" onclick="genDebit()">🔄 Recalculer</button>
+      <button class="btn btn-p xs" onclick="printDebit()">🖨 Imprimer</button>
+    </div>
+  </div>
+
+  <!-- ░ AD 468 × 60 ░ -->
+  <div class="ad-zone ad-banner">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">468 × 60</span>
+      <span class="ad-ph-type">Banner</span>
+    </div>
+  </div>
+  <div id="debit-content">
+    <div class="empty"><div class="empty-i">✂</div><div class="empty-t">Ajoutez des ouvrages dans le Devis pour générer la liste de débits</div></div>
+  </div>
+</div>
+
+<!-- ============================================================ PAGE DESSINS -->
+<div class="page" id="page-dessin">
+  <div class="ph">
+    <div><div class="pt">Dessins <em>2D</em></div><div class="ps">Vue face · Coupe H · Coupe V · Cotations</div></div>
+    <div style="display:flex;gap:0.4rem">
+      <div class="field" style="margin:0"><select id="draw-select" onchange="renderDrawing()" style="font-size:0.68rem;padding:0.3rem 0.5rem;width:220px"><option value="">-- Sélectionner un ouvrage --</option></select></div>
+      <button class="btn btn-p xs" onclick="printDrawing()">🖨 Imprimer</button>
+    </div>
+  </div>
+
+  <!-- ░ AD 728 × 90 ░ -->
+  <div class="ad-zone ad-lb">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">728 × 90</span>
+      <span class="ad-ph-type">Leaderboard</span>
+    </div>
+  </div>
+  <div id="drawing-content">
+    <div class="empty"><div class="empty-i">📏</div><div class="empty-t">Ajoutez des ouvrages et sélectionnez-en un pour voir le dessin</div></div>
+  </div>
+</div>
+
+<!-- ============================================================ PAGE REMPLISSAGE -->
+<div class="page" id="page-remplissage">
+  <div class="ph"><div><div class="pt">Vitrage & <em>Remplissage</em></div><div class="ps">Épaisseurs · Compositions · Types de verre · Prix</div></div></div>
+
+  <!-- ░ AD 336 × 280 ░ -->
+  <div class="ad-zone ad-rect">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">336 × 280</span>
+      <span class="ad-ph-type">Large Rectangle</span>
+    </div>
+  </div>
+  <div id="remplissage-content"></div>
+</div>
+
+<!-- ============================================================ PAGE SÉRIES -->
+<div class="page" id="page-series">
+  <div class="ph">
+    <div><div class="pt">Séries <em>Profilés</em></div><div class="ps">Maroc Aluminium · Strugal · Reynaers · Schüco · Wicona · Technal · +30 séries</div></div>
+    <div style="display:flex;gap:0.4rem">
+      <button class="btn btn-s xs" onclick="openModal('m-profil')">＋ Profilé</button>
+      <button class="btn btn-p xs" onclick="openModal('m-serie')">＋ Nouvelle Série</button>
+    </div>
+  </div>
+
+  <!-- ░ AD 728 × 90 ░ -->
+  <div class="ad-zone ad-lb">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">728 × 90</span>
+      <span class="ad-ph-type">Leaderboard</span>
+    </div>
+  </div>
+  <div id="series-content"></div>
+</div>
+
+<!-- ============================================================ PAGE ACCESSOIRES -->
+<div class="page" id="page-accessoires">
+  <div class="ph">
+    <div><div class="pt">Bibliothèque <em>Accessoires</em></div><div class="ps">Quincaillerie · Joints · Serrures · Visserie · Rails</div></div>
+    <button class="btn btn-p xs" onclick="openModal('m-acc')">＋ Nouvel Accessoire</button>
+  </div>
+
+  <!-- ░ AD 468 × 60 ░ -->
+  <div class="ad-zone ad-banner">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">468 × 60</span>
+      <span class="ad-ph-type">Banner</span>
+    </div>
+  </div>
+  <div id="acc-content"></div>
+</div>
+
+<!-- ============================================================ PAGE TARIFS -->
+<div class="page" id="page-tarifs">
+  <div class="ph"><div><div class="pt">Tarifs & <em>Prix</em></div><div class="ps">Prix d'achat matières paramétrables</div></div></div>
+
+  <!-- ░ AD 336 × 280 ░ -->
+  <div class="ad-zone ad-rect">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">336 × 280</span>
+      <span class="ad-ph-type">Large Rectangle</span>
+    </div>
+  </div>
+  <div id="tarifs-form"></div>
+</div>
+
+<!-- ============================================================ PAGE DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="ph"><div><div class="pt">Tableau de <em>Bord</em></div><div class="ps">Synthèse devis & bibliothèque</div></div></div>
+
+  <!-- ░ AD 728 × 90 ░ -->
+  <div class="ad-zone ad-lb">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">728 × 90</span>
+      <span class="ad-ph-type">Leaderboard</span>
+    </div>
+  </div>
+  <div id="dashboard-content"></div>
+</div>
+
+</main>
+
+<!-- PANEL -->
+<aside class="panel">
+  <div class="panel-title">📊 Récapitulatif Devis</div>
+  <div id="panel-summary"><div class="empty"><div class="empty-i">📋</div><div class="empty-t">Aucun devis en cours</div></div></div>
+  
+  <!-- ░ AD 300 × 250 ░ -->
+  <div class="ad-zone ad-mrect">
+    <!-- ▸ AdSense: décommentez et remplacez XXXXX
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    -->
+    <div class="ad-ph">
+      <span class="ad-ph-size">300 × 250</span>
+      <span class="ad-ph-type">Medium Rectangle</span>
+    </div>
+  </div>
+</aside>
+
+</div><!-- /workspace -->
+</div><!-- /shell -->
+
+<!-- ============================================================ MODALS -->
+
+<!-- MODAL SERIE -->
+<div class="mo" id="m-serie" style="display:none">
+<div class="md">
+  <button class="mc" onclick="closeModal('m-serie')">✕</button>
+  <div class="mt">Nouvelle <em>Série</em></div>
+  <div class="fg fg3">
+    <div class="field"><label>Nom / Code</label><input type="text" id="ms-nom" placeholder="ex: MA-70, W100..."></div>
+    <div class="field"><label>Fournisseur</label><select id="ms-f"><option value="MA">🇲🇦 Maroc Aluminium</option><option value="ST">🟢 Strugal</option><option value="EU">🇪🇺 Européen</option><option value="CU">⚡ Autre</option></select></div>
+    <div class="field"><label>Désignation</label><input type="text" id="ms-des" placeholder="Série thermique RPT..."></div>
+    <div class="field"><label>Prix ML (MAD)</label><input type="number" id="ms-px" placeholder="45" step="0.5"></div>
+    <div class="field"><label>Poids (kg/m)</label><input type="number" id="ms-po" placeholder="1.50" step="0.05"></div>
+    <div class="field"><label>Lg barre (mm)</label><input type="number" id="ms-lg" value="6000"></div>
+    <div class="field"><label>Application</label><select id="ms-app"><option value="fen">Fenêtres</option><option value="por">Portes</option><option value="fac">Façades</option><option value="all">Tous ouvrages</option></select></div>
+    <div class="field"><label>RPT (Rupture PT)</label><select id="ms-rpt"><option value="non">Non</option><option value="oui">Oui</option></select></div>
+    <div class="field"><label>Norme</label><select id="ms-norme"><option value="EN14351">EN 14351</option><option value="EN12207">EN 12207</option><option value="EN13830">EN 13830</option></select></div>
+  </div>
+  <div class="fg fg1"><div class="field"><label>Notes</label><textarea id="ms-no" placeholder="Applications, spécifications..."></textarea></div></div>
+  <div style="display:flex;justify-content:flex-end;gap:0.4rem;margin-top:0.8rem">
+    <button class="btn btn-s xs" onclick="closeModal('m-serie')">Annuler</button>
+    <button class="btn btn-p" onclick="saveSerie()">💾 Enregistrer</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL PROFIL -->
+<div class="mo" id="m-profil" style="display:none">
+<div class="md">
+  <button class="mc" onclick="closeModal('m-profil')">✕</button>
+  <div class="mt">Nouveau <em>Profilé</em></div>
+  <div class="fg fg3">
+    <div class="field"><label>Code</label><input type="text" id="mp-code" placeholder="CADS-MA55A"></div>
+    <div class="field"><label>Fournisseur</label><select id="mp-f" onchange="filterSeriesModal()"><option value="MA">🇲🇦 Maroc Aluminium</option><option value="ST">🟢 Strugal</option><option value="EU">🇪🇺 Européen</option><option value="CU">⚡ Autre</option></select></div>
+    <div class="field"><label>Série</label><select id="mp-s"></select></div>
+    <div class="field"><label>Type</label><select id="mp-t"><option value="Cadre dormant">Cadre dormant</option><option value="Ouvrant">Ouvrant</option><option value="Traverse">Traverse</option><option value="Montant">Montant</option><option value="Colonne façade">Colonne façade</option><option value="Traverse façade">Traverse façade</option><option value="Seuil">Seuil</option><option value="Raidisseur">Raidisseur</option><option value="Parclose">Parclose</option><option value="Couverture">Couverture</option><option value="Autre">Autre</option></select></div>
+    <div class="field"><label>Poids (kg/m)</label><input type="number" id="mp-po" step="0.01" placeholder="1.45"></div>
+    <div class="field"><label>Lg barre (mm)</label><input type="number" id="mp-lg" value="6000"></div>
+    <div class="field"><label>Prix Brut (MAD/ml)</label><input type="number" id="mp-pb" step="0.5" placeholder="35"></div>
+    <div class="field"><label>Prix Anodisé</label><input type="number" id="mp-pa" step="0.5" placeholder="45"></div>
+    <div class="field"><label>Prix Laqué/RAL</label><input type="number" id="mp-pl" step="0.5" placeholder="55"></div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;gap:0.4rem;margin-top:0.8rem">
+    <button class="btn btn-s xs" onclick="closeModal('m-profil')">Annuler</button>
+    <button class="btn btn-p" onclick="saveProfile()">💾 Enregistrer</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL ACCESSOIRE -->
+<div class="mo" id="m-acc" style="display:none">
+<div class="md">
+  <button class="mc" onclick="closeModal('m-acc')">✕</button>
+  <div class="mt">Nouvel <em>Accessoire</em></div>
+  <div class="fg fg3">
+    <div class="field"><label>Référence</label><input type="text" id="ma-ref" placeholder="QF-001"></div>
+    <div class="field"><label>Désignation</label><input type="text" id="ma-nom" placeholder="Poignée alu..."></div>
+    <div class="field"><label>Fournisseur</label><select id="ma-f"><option value="MA">🇲🇦 Maroc Aluminium</option><option value="ST">🟢 Strugal</option><option value="EU">🇪🇺 Européen</option><option value="CU">⚡ Autre</option></select></div>
+    <div class="field"><label>Catégorie</label><select id="ma-cat"><option value="poignee">Poignées</option><option value="serrure">Serrures</option><option value="joint">Joints</option><option value="visserie">Visserie</option><option value="glissiere">Glissières</option><option value="charniere">Charnières</option><option value="vitrage">Vitrage</option><option value="etancheite">Étanchéité</option><option value="quincaillerie">Quincaillerie</option><option value="autre">Autre</option></select></div>
+    <div class="field"><label>Prix (MAD)</label><input type="number" id="ma-px" step="0.5" placeholder="0"></div>
+    <div class="field"><label>Unité</label><select id="ma-u"><option value="pièce">pièce</option><option value="ml">ml</option><option value="m²">m²</option><option value="lot">lot</option><option value="kg">kg</option><option value="boîte">boîte</option></select></div>
+    <div class="field"><label>Séries compatibles</label><input type="text" id="ma-ser" placeholder="MA-45, T60, S52..."></div>
+    <div class="field"><label>Stock</label><input type="number" id="ma-stk" placeholder="0"></div>
+    <div class="field"><label>Notes</label><input type="text" id="ma-no" placeholder="Remarques..."></div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;gap:0.4rem;margin-top:0.8rem">
+    <button class="btn btn-s xs" onclick="closeModal('m-acc')">Annuler</button>
+    <button class="btn btn-p" onclick="saveAcc()">💾 Enregistrer</button>
+  </div>
+</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
